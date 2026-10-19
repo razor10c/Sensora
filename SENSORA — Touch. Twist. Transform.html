@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>SENSORA — Touch. Twist. Transform.</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+:root{--bg:#090B10;--sl:#171C27;--pn:#242B39;--aq:#8CF5E7;--ir:#C5A6FF;--tx:#F1F3F7;--mu:#9299A8;--ln:rgba(241,243,247,.1);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{background:var(--bg);color:var(--tx);font:400 15px/1.55 Inter,system-ui,sans-serif;overflow-x:hidden}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+:focus-visible{outline:2px solid var(--aq);outline-offset:3px}
+h1,h2,h3{font-family:'Space Grotesk',Inter,sans-serif;line-height:1;letter-spacing:-.02em}
+h1{font-size:clamp(44px,7.2vw,104px)}h2{font-size:clamp(32px,4.5vw,60px);margin-bottom:12px}
+.tag{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
+section{padding:96px clamp(16px,4vw,56px) 40px;max-width:1500px;margin:auto}
+.lead{color:var(--mu);max-width:52ch;margin:14px 0 28px}
+nav.top{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;gap:22px;padding:calc(env(safe-area-inset-top,0px) + 12px) clamp(16px,4vw,56px) 12px;background:rgba(9,11,16,.72);backdrop-filter:blur(10px);border-bottom:1px solid var(--ln)}
+.logo{font:700 18px 'Space Grotesk';letter-spacing:.18em;color:var(--tx);text-decoration:none;margin-right:auto}
+nav.top a.l{color:var(--mu);text-decoration:none;font-size:13px;padding:4px 0;border-bottom:1px solid transparent;transition:.2s}
+nav.top a.l:hover,nav.top a[aria-current=true]{color:var(--tx);border-color:var(--aq)}
+#menu{display:none}
+.btn,button.sw,.mods button{font:500 12px Inter;letter-spacing:.08em;color:var(--tx);background:var(--pn);border:1px solid var(--ln);border-radius:999px;padding:10px 18px;cursor:pointer;transition:.2s;text-transform:uppercase}
+.btn:hover,.mods button:hover{border-color:var(--aq)}.btn:active{transform:translateY(1px) scale(.98)}
+.btn.p{background:var(--aq);color:#06201d;border-color:var(--aq)}
+[aria-pressed=true],[aria-checked=true]{border-color:var(--aq)!important;box-shadow:0 0 0 1px var(--aq) inset}
+canvas{width:100%;height:100%;display:block;touch-action:pan-y}
+.nogl{padding:40px;color:var(--mu)}
+.vp{position:relative;height:min(68vh,620px);min-height:320px;border:1px solid var(--ln);border-radius:20px;overflow:hidden;background:radial-gradient(circle at 50% 40%,#1b2232,var(--bg) 70%),repeating-linear-gradient(0deg,transparent 0 39px,rgba(255,255,255,.03) 39px 40px)}
+.vp .tag{position:absolute;left:16px;bottom:12px}.vp .fs{position:absolute;right:12px;top:12px;padding:8px 12px}
+#entrance{min-height:100vh;display:grid;grid-template-columns:1.05fr 1fr;gap:24px;align-items:center}
+#entrance .vp{height:72vh;border:0;background:none}
+.scroll{position:absolute;bottom:18px;left:50%}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.labgrid{display:grid;grid-template-columns:170px 1fr 310px;gap:16px}
+.mods{display:flex;flex-direction:column;gap:8px}.mods button{text-align:left;border-radius:12px}
+.panel,.pgctl,.ctl,.stpanel{background:var(--sl);border:1px solid var(--ln);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.knobs{display:flex;justify-content:space-between}
+.knob{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:ns-resize;touch-action:none;user-select:none;border-radius:50%}
+.dial{width:68px;height:68px;border-radius:50%;background:repeating-conic-gradient(#4a5368 0 3deg,#1c2230 3deg 6deg);position:relative;box-shadow:0 6px 14px #0008;transition:box-shadow .2s}
+.dial::after{content:"";position:absolute;inset:7px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#8a93a6,#2a3142 70%)}
+.dial i{position:absolute;z-index:1;left:calc(50% - 2px);top:8px;width:4px;height:15px;border-radius:2px;background:var(--aq);transform-origin:50% 26px}
+.knob:hover .dial,.knob.on .dial{box-shadow:0 0 0 2px var(--aq),0 0 18px rgba(140,245,231,.35)}
+.knob output{font-size:13px;font-weight:600}.knob span,label span{font-size:11px;color:var(--mu);letter-spacing:.08em;text-transform:uppercase}
+label{display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center}
+label input[type=range],label select{grid-column:1/-1}
+label output{font-size:13px;font-variant-numeric:tabular-nums}
+input[type=range]{accent-color:var(--aq);width:100%;height:24px}
+select,input[type=text],textarea{background:var(--bg);color:var(--tx);border:1px solid var(--ln);border-radius:10px;padding:9px 10px;font:inherit;width:100%}
+input[type=color]{width:100%;height:34px;background:none;border:1px solid var(--ln);border-radius:10px}
+button.sw{display:flex;justify-content:space-between;width:100%;text-align:left}
+button.sw em{font-style:normal;color:var(--mu)}
+.pg{display:grid;grid-template-columns:1fr 290px;gap:16px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:var(--sl);border:1px solid var(--ln);border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
+.card canvas{height:300px}.meta{padding:18px;display:flex;flex-direction:column;gap:8px}
+.card .ctl,.card .info{display:none;border:0;border-radius:0}.card.open{grid-column:1/-1}.card.open .ctl,.card.open .info{display:flex}.card.open canvas{height:min(60vh,520px)}
+.info{padding:0 18px 18px;color:var(--aq);font-size:13px;min-height:2.4em}
+.hint{color:var(--mu);font-size:12px}
+.st{display:grid;grid-template-columns:1fr 330px;gap:16px}
+.ctl.stpanel{gap:10px}#msg{font-size:13px;min-height:1.6em}#msg.err{color:#ffb4b4}#msg.ok{color:var(--aq)}
+textarea{height:110px;font:12px monospace}
+#outro{text-align:center;min-height:90vh;display:flex;flex-direction:column;align-items:center}#outro .vp{width:100%;max-width:640px;height:46vh;border:0;background:none}
+footer{display:flex;gap:24px;justify-content:space-between;flex-wrap:wrap;padding:28px clamp(16px,4vw,56px);border-top:1px solid var(--ln);color:var(--mu);font-size:12px}
+#load{position:fixed;inset:0;z-index:50;background:var(--bg);display:grid;place-items:center;color:var(--mu);transition:opacity .6s}#load.h{opacity:0;pointer-events:none}
+@media(max-width:1000px){#entrance,.pg,.st,.labgrid{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.mods{flex-direction:row;flex-wrap:wrap}
+#menu{display:block}nav.top a.l{display:none}nav.top.open{flex-wrap:wrap}nav.top.open a.l{display:block}#entrance .vp{height:48vh}}
+</style></head><body>
+<div id="load" role="status">Initialising matter…</div>
+<nav class="top" id="nav"><a class="logo" href="#entrance">SENSORA</a>
+<a class="l" href="#play">Explore</a><a class="l" href="#lab">Control Lab</a><a class="l" href="#gallery">Gallery</a><a class="l" href="#studio">Studio</a>
+<button class="sw" role="switch" data-k="sfx" aria-checked="false" aria-label="Sound"><span>Sound</span>&nbsp;<em>Off</em></button>
+<button class="btn" id="menu" aria-label="Menu" aria-expanded="false">Menu</button></nav>
+<main>
+<section id="entrance"><div class="hl"><p class="tag">Interactive digital playground</p><br><h1>MATTER IS YOURS TO MOVE.</h1>
+<p class="lead">Explore the boundary between mechanical precision and fluid digital matter.</p>
+<div class="row"><button class="btn p" id="enter">Enter the playground</button><button class="btn" id="objs">Explore the objects</button></div>
+<p class="tag" style="margin-top:28px">Touch. Twist. Transform. — A playground for digital matter.</p></div>
+<div class="vp"><canvas id="heroCv" aria-label="Interactive liquid chrome sculpture; move your pointer to turn it"></canvas><span class="tag">OBJ-001 · Liquid torus · Live</span></div></section>
+
+<section id="lab"><h2>The Control Lab</h2><p class="lead">Turn the knobs, drag the sliders, flip the switches. Everything drives the object live.</p>
+<div class="labgrid"><div class="mods" role="group" aria-label="Modules"></div>
+<div class="vp" id="labvp"><canvas id="labCv" aria-label="Control Lab 3D viewport"></canvas><span class="tag" id="stat"></span><button class="btn fs" id="fs" aria-label="Toggle fullscreen">Fullscreen</button></div>
+<div class="panel"><div class="knobs">
+<div class="knob" role="slider" tabindex="0" aria-label="Distortion" data-k="dist" data-min="0" data-max="100"><div class="dial"><i></i></div><output></output><span>Distortion</span></div>
+<div class="knob" role="slider" tabindex="0" aria-label="Rotation" data-k="rot" data-min="0" data-max="360"><div class="dial"><i></i></div><output></output><span>Rotation</span></div>
+<div class="knob" role="slider" tabindex="0" aria-label="Fluidity" data-k="fluid" data-min="0" data-max="100"><div class="dial"><i></i></div><output></output><span>Fluidity</span></div></div>
+<label><span>Glow intensity</span><output></output><input type="range" min="0" max="100" data-k="glow"></label>
+<label><span>Particle density</span><output></output><input type="range" min="0" max="100" data-k="dens"></label>
+<label><span>Animation speed</span><output></output><input type="range" min="0" max="100" data-k="speed"></label>
+<button class="sw" role="switch" data-k="part"><span>Particle mode</span><em></em></button>
+<button class="sw" role="switch" data-k="wire"><span>Wireframe mode</span><em></em></button>
+<button class="sw" role="switch" data-k="auto"><span>Auto rotation</span><em></em></button>
+<button class="sw" role="switch" data-k="sfx"><span>Sound effects</span><em></em></button>
+<div class="row" id="pres"><button class="btn" data-pre="CALM" aria-pressed="false">Calm</button><button class="btn" data-pre="PULSE" aria-pressed="false">Pulse</button><button class="btn" data-pre="FLUX" aria-pressed="false">Flux</button></div>
+<button class="btn" id="labReset">Reset</button></div></div></section>
+
+<section id="play"><h2>Matter Playground</h2><p class="lead" id="pgd"></p><div class="tabs" id="tabs" role="group" aria-label="Experiments"></div>
+<div class="pg"><div class="vp"><canvas id="pgCv" aria-label="Experiment preview"></canvas><span class="tag" id="pgt"></span></div><div class="pgctl" id="pgctl"></div></div></section>
+
+<section id="gallery"><h2>Mechanical Gallery</h2><p class="lead">Three fictional gadgets. Drag to turn them, then open one to take it apart.</p>
+<div class="cards">
+<article class="card" data-g="orbit"><canvas aria-label="Orbit gadget"></canvas><div class="meta"><h3>Orbit</h3><p class="lead" style="margin:0">Four concentric rings, each on its own axis.</p><span class="hint">Drag to turn · click a ring · ←/→ rotates it</span><button class="btn p" data-open aria-expanded="false">Explore object</button></div><div class="ctl"></div><p class="info" aria-live="polite"></p></article>
+<article class="card" data-g="flux"><canvas aria-label="Flux gadget"></canvas><div class="meta"><h3>Flux</h3><p class="lead" style="margin:0">A transparent cube holding a liquid core.</p><span class="hint">Drag to turn · click a component</span><button class="btn p" data-open aria-expanded="false">Explore object</button></div><div class="ctl"></div><p class="info" aria-live="polite"></p></article>
+<article class="card" data-g="pulse"><canvas aria-label="Pulse gadget"></canvas><div class="meta"><h3>Pulse</h3><p class="lead" style="margin:0">A layered rotary instrument with a light ring.</p><span class="hint">Drag to turn · click a layer</span><button class="btn p" data-open aria-expanded="false">Explore object</button></div><div class="ctl"></div><p class="info" aria-live="polite"></p></article>
+</div></section>
+
+<section id="studio"><h2>Creator Studio</h2><p class="lead">Shape an object, then save, export or import the configuration.</p>
+<div class="st"><div class="vp"><canvas id="stCv" aria-label="Studio preview"></canvas></div>
+<div class="ctl stpanel"><div id="stctl" style="display:flex;flex-direction:column;gap:12px"></div>
+<input type="text" id="pname" placeholder="Preset name" aria-label="Preset name"><select id="plist" aria-label="Saved presets"></select>
+<div class="row"><button class="btn" id="psave">Save</button><button class="btn" id="pload">Load</button><button class="btn" id="pren">Rename</button><button class="btn" id="pdel">Delete</button></div>
+<div class="row"><button class="btn" id="pexp">Export JSON</button><button class="btn" id="pimp">Import JSON</button><label class="btn" style="display:inline-block">File<input type="file" id="pfile" accept=".json,application/json" hidden></label><button class="btn" id="preset">Reset</button></div>
+<textarea id="json" aria-label="Configuration JSON" placeholder="Exported JSON appears here. Paste JSON and press Import."></textarea><p id="msg" role="status"></p></div></div></section>
+
+<section id="outro"><div class="vp"><canvas id="outCv" aria-label="Sculpture dissolving into particles and reforming"></canvas></div>
+<h2>Matter never stays still.</h2><p class="lead">Keep exploring. Every interaction creates a new possibility.</p><button class="btn p" id="back">Return to playground</button></section>
+</main>
+<footer><span><b>SENSORA</b> · Interactive digital playground</span><span>Credits: concept &amp; build with Claude</span><span>Three.js r128 · GLSL · Web Audio · localStorage</span></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches,LOW=innerWidth<800,rad=d=>d*Math.PI/180;
+const V=[],rc=new THREE.Raycaster(),m2=new THREE.Vector2(),clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+const S={dist:40,rot:0,fluid:50,glow:50,dens:60,speed:50,part:true,wire:false,auto:true,sfx:false};
+const DEF={...S};
+/* ---------- sound ---------- */
+let AC,lastB=0;function blip(f=440){if(!S.sfx||performance.now()-lastB<70)return;lastB=performance.now();AC=AC||new AudioContext();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;g.gain.value=.04;g.gain.exponentialRampToValueAtTime(.001,AC.currentTime+.12);o.connect(g).connect(AC.destination);o.start();o.stop(AC.currentTime+.12)}
+/* ---------- viewer factory ---------- */
+function viewer(cv,o={}){let r;try{r=new THREE.WebGLRenderer({canvas:cv,antialias:!LOW,alpha:true})}catch(e){const p=document.createElement('p');p.className='nogl';p.textContent='WebGL is unavailable in this browser. Turn on hardware acceleration to see this scene.';cv.replaceWith(p);return null}
+ r.setPixelRatio(Math.min(devicePixelRatio,LOW?1.5:2));const s=new THREE.Scene(),c=new THREE.PerspectiveCamera(40,1,.1,100);c.position.z=o.z||5;const root=new THREE.Group();s.add(root);
+ const v={r,s,c,root,cv,px:0,py:0,rx:0,ry:0,vis:false,tick(){}};
+ const fit=()=>{const w=cv.clientWidth||1,h=cv.clientHeight||1;r.setSize(w,h,false);c.aspect=w/h;c.updateProjectionMatrix()};new ResizeObserver(fit).observe(cv);fit();
+ new IntersectionObserver(e=>v.vis=e[0].isIntersecting).observe(cv);
+ addEventListener('pointermove',e=>{const b=cv.getBoundingClientRect();v.px=clamp(((e.clientX-b.left)/b.width-.5)*2,-1.5,1.5);v.py=clamp(((e.clientY-b.top)/b.height-.5)*2,-1.5,1.5)});
+ if(o.drag){let d=null,mv=0;cv.addEventListener('pointerdown',e=>{d=[e.clientX,e.clientY];mv=0;cv.setPointerCapture(e.pointerId)});cv.addEventListener('pointermove',e=>{if(d){v.ry+=(e.clientX-d[0])*.01;v.rx+=(e.clientY-d[1])*.01;mv+=Math.abs(e.clientX-d[0])+Math.abs(e.clientY-d[1]);d=[e.clientX,e.clientY]}else o.hover&&o.hover(e)});cv.addEventListener('pointerup',e=>{if(d&&mv<5&&o.pick)o.pick(e);d=null})}
+ V.push(v);return v}
+function hit(v,e,objs){const b=v.cv.getBoundingClientRect();m2.set((e.clientX-b.left)/b.width*2-1,-((e.clientY-b.top)/b.height)*2+1);rc.setFromCamera(m2,v.c);const h=rc.intersectObjects(objs,false)[0];return h&&h.object}
+(function L(t){requestAnimationFrame(L);t*=.001;for(const v of V)if(v.vis&&!document.hidden){v.tick(t,.016);v.r.render(v.s,v.c)}})(0);
+/* ---------- liquid-chrome shader (vertex displacement + fresnel looks) ---------- */
+const VS=`uniform float uT,uD,uF;varying vec3 vN,vV;void main(){vec3 p=position;float n=sin(p.x*2.7+uT*(.5+uF*2.))*sin(p.y*3.1+uT*(.4+uF*1.6))*sin(p.z*2.3+uT*(.6+uF*2.2));p+=normal*n*uD*(.35+uF*.4);vN=normalize(normalMatrix*normal);vec4 m=modelViewMatrix*vec4(p,1.);vV=-m.xyz;gl_Position=projectionMatrix*m;}`;
+const FS=`uniform float uT,uG,uM,uO;uniform vec3 uA,uB;varying vec3 vN,vV;void main(){vec3 N=normalize(vN),V=normalize(vV);float f=pow(1.-abs(dot(N,V)),2.2);float b=sin(N.y*5.+uT)*.5+.5;vec3 c=mix(uA,uB,N.y*.5+.5);float l=max(dot(N,normalize(vec3(.4,.8,.5))),0.);vec3 col;float a=1.;
+if(uM<.5){col=vec3(.03,.04,.07)+c*(f*.9+b*.12)+.12*vec3(pow(l,24.));}else if(uM<1.5){col=vec3(.1,.12,.16)+c*f*.7;a=.35+f*.5;}else if(uM<2.5){col=mix(uA,uB,b)*(.25+f)+.05;a=.55+f*.4;}else{col=vec3(.75,.77,.8)*(.25+.75*l)+c*f*.2;}
+col+=c*uG*f*1.2;gl_FragColor=vec4(col,a*uO);}`;
+const mat=()=>new THREE.ShaderMaterial({transparent:true,vertexShader:VS,fragmentShader:FS,uniforms:{uT:{value:0},uD:{value:.4},uF:{value:.5},uG:{value:.5},uM:{value:0},uO:{value:1},uA:{value:new THREE.Color('#8CF5E7')},uB:{value:new THREE.Color('#C5A6FF')}}});
+const setM=(m,t,d,f,g)=>{const u=m.uniforms;u.uT.value=t;u.uD.value=d/100;u.uF.value=f/100;u.uG.value=g/100};
+function pts(n,rad0,col){const g=new THREE.BufferGeometry(),a=new Float32Array(n*3);for(let i=0;i<n*3;i+=3){const u=Math.random()*6.283,w=Math.acos(2*Math.random()-1),r=rad0*(.6+Math.random()*.8);a[i]=r*Math.sin(w)*Math.cos(u);a[i+1]=r*Math.cos(w);a[i+2]=r*Math.sin(w)*Math.sin(u)}g.setAttribute('position',new THREE.BufferAttribute(a,3));return new THREE.Points(g,new THREE.PointsMaterial({size:.025,color:col,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false}))}
+const NP=LOW?1800:4000;
+/* ---------- shared control UI builder ---------- */
+function ui(box,cfg,st,cb){box.textContent='';const sy=[];cfg.forEach(c=>c.k&&(st[c.k]??=c.v));
+ cfg.forEach(c=>{if(c.b){const b=document.createElement('button');b.className='btn';b.textContent=c.l;b.onclick=c.b;box.append(b);return}
+  const L=document.createElement('label'),sp=document.createElement('span'),out=document.createElement('output');sp.textContent=c.l;L.append(sp,out);let i;
+  if(c.o){i=document.createElement('select');c.o.forEach((o,n)=>i.add(new Option(o,n)));i.onchange=()=>{st[c.k]=+i.value;cb(c.k)}}
+  else if(c.c){i=document.createElement('input');i.type='color';i.oninput=()=>{st[c.k]=i.value;cb(c.k)}}
+  else{i=document.createElement('input');i.type='range';i.min=c.mn;i.max=c.mx;i.oninput=()=>{st[c.k]=+i.value;out.textContent=i.value;cb(c.k);blip(250+i.value*2)}}
+  i.setAttribute('aria-label',c.l);L.append(i);box.append(L);sy.push(()=>{i.value=st[c.k];if(!c.o&&!c.c)out.textContent=st[c.k]})});
+ const sync=()=>sy.forEach(f=>f());sync();return{sync,reset(){cfg.forEach(c=>c.k&&(st[c.k]=c.v));sync();cb()}}}
+/* ---------- Control Lab: knobs, sliders, switches ---------- */
+const SY=[];
+$$('.knob').forEach(el=>{const k=el.dataset.k,mn=+el.dataset.min,mx=+el.dataset.max,dial=$('.dial',el),out=$('output',el);
+ const draw=()=>{dial.style.transform=`rotate(${-135+(S[k]-mn)/(mx-mn)*270}deg)`;out.textContent=Math.round(S[k])+(k==='rot'?'°':'');el.setAttribute('aria-valuenow',Math.round(S[k]))};
+ const set=v=>{S[k]=clamp(v,mn,mx);draw();blip(200+S[k]*3);presetOff()};let y=null,v0=0;
+ el.setAttribute('aria-valuemin',mn);el.setAttribute('aria-valuemax',mx);
+ el.onpointerdown=e=>{y=e.clientY;v0=S[k];el.setPointerCapture(e.pointerId);el.classList.add('on')};
+ el.onpointermove=e=>{if(y!==null)set(v0+(y-e.clientY)*(mx-mn)/180)};el.onpointerup=()=>{y=null;el.classList.remove('on')};
+ el.onkeydown=e=>{const st=(mx-mn)/50,u=['ArrowUp','ArrowRight'].includes(e.key),d=['ArrowDown','ArrowLeft'].includes(e.key);if(u||d){set(S[k]+(u?st:-st));e.preventDefault()}};SY.push(draw)});
+$$('input[type=range][data-k]').forEach(i=>{const k=i.dataset.k,o=i.parentNode.querySelector('output');i.oninput=()=>{S[k]=+i.value;o.textContent=i.value;blip(300+S[k]*4);presetOff()};SY.push(()=>{i.value=S[k];o.textContent=S[k]})});
+$$('button[role=switch][data-k]').forEach(b=>{const k=b.dataset.k;b.onclick=()=>{S[k]=!S[k];sync();blip(S[k]?700:400)};SY.push(()=>{b.setAttribute('aria-checked',S[k]);b.querySelector('em').textContent=S[k]?'On':'Off'})});
+const sync=()=>SY.forEach(f=>f());
+const PRE={CALM:{dist:15,fluid:25,glow:30,dens:30,speed:20,part:false},PULSE:{dist:45,fluid:60,glow:60,dens:70,speed:60,part:true},FLUX:{dist:85,fluid:90,glow:75,dens:90,speed:90,part:true}};
+const presetOff=()=>$$('[data-pre]').forEach(b=>b.setAttribute('aria-pressed',false));
+$$('[data-pre]').forEach(b=>b.onclick=()=>{Object.assign(S,PRE[b.dataset.pre]);sync();presetOff();b.setAttribute('aria-pressed',true);blip(520)});
+function resetLab(){Object.assign(S,DEF,{sfx:S.sfx});sync();presetOff();setMod('liquid')}
+$('#labReset').onclick=resetLab;
+$('#fs').onclick=()=>{try{document.fullscreenElement?document.exitFullscreen():$('#labvp').requestFullscreen()}catch(e){}};
+const MODS=['Liquid','Chrome','Particles','Geometry','Mechanical'];let mod='liquid',lg=[],rings=[],ar=0,lt=0,labP;
+const labMat=mat();const lab=viewer($('#labCv'));
+MODS.forEach(n=>{const b=document.createElement('button');b.textContent=n;b.dataset.m=n.toLowerCase();b.onclick=()=>setMod(b.dataset.m);$('.mods').append(b)});
+function setMod(m){mod=m;$$('.mods button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===m));if(!lab)return;lab.root.clear();lg.forEach(g=>g.dispose());lg=[];rings=[];const u=labMat.uniforms.uM;
+ const add=g=>{lg.push(g);const o=new THREE.Mesh(g,labMat);lab.root.add(o);return o};
+ if(m==='liquid'){add(new THREE.TorusGeometry(1.1,.42,96,160));u.value=2}
+ if(m==='chrome'){add(new THREE.SphereGeometry(1.3,96,64));u.value=0}
+ if(m==='geometry'){add(new THREE.IcosahedronGeometry(1.4,2));u.value=3}
+ if(m==='mechanical'){[1.6,1.15,.7].forEach(r=>rings.push(add(new THREE.TorusGeometry(r,.08,24,128))));u.value=0}
+ labP.scale.setScalar(m==='particles'?1.5:1);lab.root.add(labP)}
+if(lab){labP=pts(NP,1.9,'#8CF5E7');setMod('liquid');let last='';
+ lab.tick=(t,dt)=>{const k=S.speed/50*(RM?.2:1);lt+=dt*k;if(S.auto&&!RM)ar+=dt*.4*S.speed/50;setM(labMat,lt,S.dist,S.fluid,S.glow);labMat.wireframe=S.wire;
+  const R=lab.root;R.rotation.x=lab.py*.2;R.rotation.y=(mod==='mechanical'?0:rad(S.rot))+ar;R.position.y=Math.sin(lt)*.06;
+  if(mod==='mechanical'){rings[0].rotation.x=rad(S.rot);rings[1].rotation.y=rad(S.rot)*.5+lt*.6;rings[2].rotation.x=-lt*.8}
+  labP.visible=S.part||mod==='particles';labP.geometry.setDrawRange(0,NP*S.dens/100);labP.rotation.y=-lt*.3;labP.material.opacity=.4+S.glow/200;
+  const s=`${mod.toUpperCase()} · DIST ${Math.round(S.dist)} · ROT ${Math.round(S.rot)}° · FLU ${Math.round(S.fluid)} · LIVE`;if(s!==last){$('#stat').textContent=s;last=s}}}
+else $('#stat').textContent='WebGL unavailable';
+sync();
+/* ---------- Hero ---------- */
+const hm=mat(),hero=viewer($('#heroCv'));let hz=5,hover=false;
+if(hero){hero.root.add(new THREE.Mesh(new THREE.TorusGeometry(1.2,.5,128,200),hm));const hp=pts(NP/2,2.4,'#C5A6FF');hero.root.add(hp);hm.uniforms.uM.value=0;
+ hero.cv.addEventListener('pointermove',e=>hover=!!hit(hero,e,[hero.root.children[0]]));hero.cv.onpointerleave=()=>hover=false;
+ hero.tick=(t,dt)=>{setM(hm,t,45,50,hover?95:45);const R=hero.root;R.rotation.y=hero.px*.5+(RM?0:t*.2);R.rotation.x=hero.py*.4;R.position.y=Math.sin(t*.8)*.1+scrollY*.002;hp.rotation.y=-t*.05;hero.c.position.z+=(hz-hero.c.position.z)*.06}}
+addEventListener('scroll',()=>{$('.hl').style.transform=`translateY(${Math.min(scrollY,600)*.12}px)`},{passive:true});
+$('#enter').onclick=()=>{hz=2.6;setTimeout(()=>{$('#lab').scrollIntoView();setTimeout(()=>hz=5,700)},RM?0:650)};
+$('#objs').onclick=()=>$('#gallery').scrollIntoView();
+/* ---------- Matter Playground ---------- */
+const EX={morph:{t:'Liquid morph',d:'Push and soften a translucent organic form.',c:[{k:'dist',l:'Shape distortion',mn:0,mx:100,v:55},{k:'fluid',l:'Surface fluidity',mn:0,mx:100,v:50},{k:'rot',l:'Rotation',mn:0,mx:360,v:0},{k:'op',l:'Transparency (opacity)',mn:10,mx:100,v:80},{k:'hue',l:'Material colour',mn:0,mx:360,v:175}]},
+ field:{t:'Particle field',d:'Your pointer pulls or pushes thousands of points; click for a pulse.',c:[{k:'dens',l:'Density',mn:10,mx:100,v:70},{k:'spd',l:'Speed',mn:0,mx:100,v:40},{k:'hue',l:'Colour',mn:0,mx:360,v:175},{k:'pm',l:'Pointer',o:['Attract','Repel'],v:0}]},
+ geo:{t:'Geometry lab',d:'Stack, spiral or orbit a set of rings around a core.',c:[{k:'n',l:'Number of rings',mn:1,mx:14,v:6},{k:'sc',l:'Scale',mn:40,mx:150,v:100},{k:'rot',l:'Rotation',mn:0,mx:360,v:0},{k:'sp',l:'Spacing',mn:10,mx:100,v:50},{k:'hue',l:'Colour',mn:0,mx:360,v:190},{k:'arr',l:'Arrangement',o:['Stack','Spiral','Orbit'],v:0}]},
+ chrome:{t:'Liquid chrome',d:'One sculpture, four surface approximations (visual shading, not fluid physics).',c:[{k:'mat',l:'Material',o:['Chrome','Frosted glass','Translucent liquid','Matte ceramic'],v:0},{k:'dist',l:'Distortion',mn:0,mx:100,v:40},{k:'rot',l:'Rotation',mn:0,mx:360,v:0}]},
+ magnet:{t:'Liquid magnet',d:'A liquid blob chases your cursor like it is magnetised, trailing droplets behind it.',c:[{k:'pull',l:'Magnet strength',mn:10,mx:100,v:50},{k:'fluid',l:'Fluidity',mn:0,mx:100,v:60},{k:'blobs',l:'Droplets',mn:0,mx:12,v:8},{k:'hue',l:'Colour',mn:0,mx:360,v:175}]},
+ sand:{t:'Sand',d:'Fine grains scatter away from your cursor and slowly settle back.',c:[{k:'rad',l:'Cursor radius',mn:10,mx:100,v:45},{k:'settle',l:'Settle speed',mn:0,mx:100,v:30},{k:'dens',l:'Grains',mn:10,mx:100,v:80},{k:'hue',l:'Colour',mn:0,mx:360,v:35}]},
+ vortex:{t:'Vortex',d:'Particles spiral around your cursor. Click to reverse the spin.',c:[{k:'spin',l:'Swirl strength',mn:10,mx:100,v:50},{k:'dens',l:'Density',mn:10,mx:100,v:70},{k:'hue',l:'Colour',mn:0,mx:360,v:260}]}};
+const PS={},pgMat=mat(),pg=viewer($('#pgCv'),{z:5});let cur='morph',pgUi,pf,home,vel,pt=0,mag=[],vdir=1;
+const sph=new THREE.SphereGeometry(1.3,96,64),knot=new THREE.TorusKnotGeometry(.9,.3,200,32),ring=new THREE.TorusGeometry(1,.04,16,96),small=new THREE.SphereGeometry(1,32,24);
+const hsl=(h,l=.7)=>new THREE.Color().setHSL(h/360,.7,l);
+function pgBuild(){const p=PS[cur];if(!pg)return;const R=pg.root;R.clear();R.rotation.set(0,0,0);const u=pgMat.uniforms;u.uO.value=1;
+ if(cur==='morph'){R.add(new THREE.Mesh(sph,pgMat));u.uM.value=2}
+ if(cur==='chrome'){R.add(new THREE.Mesh(knot,pgMat));u.uA.value.set('#8CF5E7');u.uB.value.set('#C5A6FF')}
+ if(cur==='geo'){u.uM.value=0;u.uA.value.copy(hsl(p.hue));u.uB.value.copy(hsl(p.hue+70));R.add(new THREE.Mesh(new THREE.SphereGeometry(.35,32,24),pgMat));
+  for(let i=0;i<p.n;i++){const m=new THREE.Mesh(ring,pgMat),s=p.sc/100*1.6*(p.arr==1?1-i/(p.n*1.3):1);m.scale.setScalar(s);
+   if(p.arr==0)m.position.z=(i-(p.n-1)/2)*p.sp/100*.8;if(p.arr==1)m.rotation.y=i*p.sp/100*.9;if(p.arr==2)m.rotation.x=i*Math.PI/p.n;R.add(m)}}
+ if(cur==='field'||cur==='sand'||cur==='vortex'){const n=cur==='sand'?(LOW?4000:9000):NP,a=new Float32Array(n*3);for(let i=0;i<n*3;i+=3){a[i]=(Math.random()-.5)*5.5;a[i+1]=(Math.random()-.5)*3.4;a[i+2]=(Math.random()-.5)*1.2}
+  home=a.slice();vel=new Float32Array(n*3);const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(a,3));pf=new THREE.Points(g,new THREE.PointsMaterial({size:.03,transparent:true,opacity:.85,blending:THREE.AdditiveBlending,depthWrite:false}));pf.material.size=cur==='sand'?.022:.03;R.add(pf)}
+ if(cur==='magnet'){u.uM.value=2;mag=[];for(let i=0;i<13;i++){const m=new THREE.Mesh(i?small:sph,pgMat);m.scale.setScalar(i?Math.max(.12,.5-i*.03):.7);R.add(m);mag.push(m)}}}
+function pgSwitch(k){cur=k;PS[k]=PS[k]||{};$$('#tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));$('#pgd').textContent=EX[k].d;$('#pgt').textContent=EX[k].t;
+ pgUi=ui($('#pgctl'),[...EX[k].c,{l:'Reset experiment',b:()=>pgUi.reset()}],PS[k],c=>{if(cur==='geo'||c===undefined)pgBuild()});pgBuild()}
+Object.keys(EX).forEach(k=>{const b=document.createElement('button');b.className='btn';b.textContent=EX[k].t;b.dataset.k=k;b.onclick=()=>pgSwitch(k);$('#tabs').append(b)});
+if(pg){pg.cv.addEventListener('pointerdown',e=>{if(cur==='vortex'){vdir*=-1;blip(300);return}if(cur!=='field'||!pf)return;const tx=pg.px*2.6,ty=-pg.py*1.6;for(let i=0;i<vel.length;i+=3){const dx=pf.geometry.attributes.position.array[i]-tx,dy=pf.geometry.attributes.position.array[i+1]-ty,d=Math.hypot(dx,dy);if(d<2.5){vel[i]+=dx/(d+.3)*4;vel[i+1]+=dy/(d+.3)*4}}blip(300)});
+ pg.tick=(t,dt)=>{const p=PS[cur],u=pgMat.uniforms,R=pg.root;pt+=dt*(RM?.2:1);
+  if(cur==='morph'||cur==='chrome'){const m=cur==='morph';setM(pgMat,pt,p.dist,m?p.fluid:50,45);u.uO.value=m?p.op/100:1;u.uM.value=m?2:p.mat;if(m){u.uA.value.copy(hsl(p.hue));u.uB.value.copy(hsl(p.hue+60))}R.rotation.y=rad(p.rot)+(RM?0:pt*.2);R.rotation.x=pg.py*.25}
+  if(cur==='geo'){setM(pgMat,pt,0,50,50);R.rotation.y=rad(p.rot)+(RM?0:pt*.15);R.rotation.x=pg.py*.2}
+  if(cur==='field'&&pf){const a=pf.geometry.attributes.position.array,n=Math.floor(NP*p.dens/100),tx=pg.px*2.6,ty=-pg.py*1.6,k=(p.pm?-1:1)*(.5+p.spd/50),d0=Math.min(dt,.03);pf.geometry.setDrawRange(0,n);pf.material.color.copy(hsl(p.hue));
+   for(let i=0;i<n*3;i+=3){const dx=tx-a[i],dy=ty-a[i+1],d2=dx*dx+dy*dy+.3,f=k*6/d2;vel[i]+=(dx*f+(home[i]-a[i])*4)*d0;vel[i+1]+=(dy*f+(home[i+1]-a[i+1])*4)*d0;vel[i+2]+=(home[i+2]-a[i+2])*4*d0;vel[i]*=.96;vel[i+1]*=.96;vel[i+2]*=.96;a[i]+=vel[i]*d0*3;a[i+1]+=vel[i+1]*d0*3;a[i+2]+=vel[i+2]*d0*3}pf.geometry.attributes.position.needsUpdate=true}
+  if(cur==='vortex'&&pf){const a=pf.geometry.attributes.position.array,n=Math.floor(NP*p.dens/100),tx=pg.px*2.6,ty=-pg.py*1.6,d0=Math.min(dt,.03),sp=p.spin/10*vdir;pf.geometry.setDrawRange(0,n);pf.material.color.copy(hsl(p.hue));
+   for(let i=0;i<n*3;i+=3){const dx=tx-a[i],dy=ty-a[i+1],d2=dx*dx+dy*dy+.4;vel[i]+=(dy*sp/d2+dx*1.5/d2+(home[i]-a[i])*1.2)*d0;vel[i+1]+=(-dx*sp/d2+dy*1.5/d2+(home[i+1]-a[i+1])*1.2)*d0;vel[i+2]+=(home[i+2]-a[i+2])*2*d0;vel[i]*=.97;vel[i+1]*=.97;vel[i+2]*=.97;a[i]+=vel[i]*d0*3;a[i+1]+=vel[i+1]*d0*3;a[i+2]+=vel[i+2]*d0*3}pf.geometry.attributes.position.needsUpdate=true}
+  if(cur==='sand'&&pf){const a=pf.geometry.attributes.position.array,tot=a.length/3,n=Math.floor(tot*p.dens/100),tx=pg.px*2.6,ty=-pg.py*1.6,r=p.rad/100*1.6,s=Math.min(1,dt*p.settle/40);pf.geometry.setDrawRange(0,n);pf.material.color.copy(hsl(p.hue));
+   for(let i=0;i<n*3;i+=3){const dx=a[i]-tx,dy=a[i+1]-ty,d=Math.hypot(dx,dy);if(d<r){const f=(r-d)/(d+.01)*.35;a[i]+=dx*f;a[i+1]+=dy*f;a[i+2]+=(Math.random()-.5)*.03}else{a[i]+=(home[i]-a[i])*s;a[i+1]+=(home[i+1]-a[i+1])*s;a[i+2]+=(home[i+2]-a[i+2])*s}}pf.geometry.attributes.position.needsUpdate=true}
+  if(cur==='magnet'&&mag.length){setM(pgMat,pt,35+p.fluid*.4,p.fluid,55);u.uM.value=2;u.uA.value.copy(hsl(p.hue));u.uB.value.copy(hsl(p.hue+60));R.rotation.set(0,0,0);const tx=pg.px*2.6,ty=-pg.py*1.6,k=3+p.pull/12;
+   mag.forEach((m,i)=>{m.visible=i<=p.blobs;const ax=i?mag[i-1].position.x:tx,ay=i?mag[i-1].position.y:ty,kk=Math.min(1,dt*(i?k*(1-i*.04)+1:k));m.position.x+=(ax-m.position.x)*kk;m.position.y+=(ay-m.position.y)*kk;m.position.z=i?Math.sin(pt*1.5+i)*.3:0})}}
+ pgSwitch('morph')}
+/* ---------- Mechanical Gallery ---------- */
+const alu=()=>new THREE.MeshStandardMaterial({color:'#c9d0dc',metalness:.85,roughness:.3,emissive:0});
+const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
+const GAD={
+ orbit:(v,G)=>{const nm=['Outer ring','Mid ring','Inner ring','Core ring'],parts=[];[1.6,1.25,.9,.55].forEach((r,i)=>{const m=new THREE.Mesh(new THREE.TorusGeometry(r,.08,24,128),alu());v.root.add(m);parts.push({m,base:V3(0,0,0),dir:V3(0,0,(i-1.5)*.9),name:nm[i],desc:'A free-spinning ring on its own axis.',a:0,ax:i%2?'y':'x'})});
+  G.extra=p=>' · '+Math.round(p.a)+'°';G.rot=d=>{if(!G.sel)return;G.sel.a=(G.sel.a+d+360)%360;G.show()};
+  return{parts,cfg:[{l:'Rotate −15°',b:()=>G.rot(-15)},{l:'Rotate +15°',b:()=>G.rot(15)},{l:'Reset rings',b:()=>{parts.forEach(p=>p.a=0);G.show()}}],tick(){parts.forEach(p=>p.m.rotation[p.ax]=rad(p.a))}}},
+ flux:(v,G)=>{const cm=mat();cm.uniforms.uM.value=2;const core=new THREE.Mesh(new THREE.SphereGeometry(.7,48,32),cm),sm=new THREE.MeshStandardMaterial({color:'#bfeff0',transparent:true,opacity:.22,roughness:.05,side:THREE.DoubleSide,emissive:0}),shell=new THREE.Mesh(new THREE.BoxGeometry(2.2,2.2,2.2),sm),frame=new THREE.LineSegments(new THREE.EdgesGeometry(shell.geometry),new THREE.LineBasicMaterial({color:'#8CF5E7'}));
+  [shell,frame,core].forEach(m=>v.root.add(m));const st=G.st;
+  return{parts:[{m:shell,base:V3(0,0,0),dir:V3(0,1.9,0),name:'Shell',desc:'Transparent housing; switch between glass and chrome.'},{m:frame,base:V3(0,0,0),dir:V3(0,-1.9,0),name:'Frame',desc:'Edge skeleton that holds the cube’s shape.'},{m:core,base:V3(0,0,0),dir:V3(0,0,1.4),name:'Liquid core',desc:'Deformable liquid body; its shape follows the slider.'}],
+  cfg:[{k:'shape',l:'Core shape',mn:0,mx:100,v:30},{k:'mat',l:'Shell material',o:['Glass','Chrome'],v:0}],
+  tick(t){setM(cm,t,st.shape,60,50);const c=st.mat==1;sm.metalness=c?.9:0;sm.roughness=c?.15:.05;sm.opacity=c?.55:.22;sm.color.set(c?'#dde3ee':'#bfeff0')}}},
+ pulse:(v,G)=>{const g=new THREE.Group();g.rotation.x=1.1;v.root.add(g);const st=G.st;
+  const base=new THREE.Mesh(new THREE.CylinderGeometry(1.6,1.6,.25,64),alu()),rm=new THREE.MeshStandardMaterial({color:'#222',emissive:'#8CF5E7',emissiveIntensity:.5}),rg=new THREE.Mesh(new THREE.TorusGeometry(1.25,.06,16,96),rm),dial=new THREE.Mesh(new THREE.CylinderGeometry(.85,.85,.4,48),alu()),ind=new THREE.Mesh(new THREE.BoxGeometry(.1,.45,.4),new THREE.MeshStandardMaterial({color:'#C5A6FF',emissive:'#C5A6FF',emissiveIntensity:.6}));
+  ind.position.set(0,.02,-.6);dial.add(ind);rg.rotation.x=Math.PI/2;[base,rg,dial].forEach(m=>g.add(m));const pp=pts(900,1.8,'#C5A6FF');v.root.add(pp);
+  return{parts:[{m:base,base:V3(0,0,0),dir:V3(0,-1.2,0),name:'Base plate',desc:'Machined aluminium housing.'},{m:rg,base:V3(0,.2,0),dir:V3(0,.5,0),name:'Light ring',desc:'Pulsing emissive ring.',hi:false},{m:dial,base:V3(0,.35,0),dir:V3(0,1.6,0),name:'Main dial',desc:'Rotary control with a violet indicator.'}],
+  cfg:[{k:'dial',l:'Main dial',mn:0,mx:360,v:0},{k:'int',l:'Pulse intensity',mn:0,mx:100,v:60},{k:'spd',l:'Light speed',mn:0,mx:100,v:50},{k:'pt',l:'Particle field',o:['Off','On'],v:1}],
+  tick(t){dial.rotation.y=rad(st.dial);rm.emissiveIntensity=.2+st.int/60*(.5+.5*Math.sin(t*(1+st.spd/10)));pp.visible=!!st.pt;pp.rotation.y=t*.1}}}};
+$$('.card').forEach(card=>{const G={st:{}},info=$('.info',card);let hov=null,ex=0,tg=0,A;
+ const v=viewer($('canvas',card),{z:5.6,drag:true,pick:e=>G.select(hit(v,e,A.parts.map(p=>p.m))),hover:e=>{hov=hit(v,e,A.parts.map(p=>p.m))}});if(!v)return;
+ v.s.add(new THREE.AmbientLight(0xffffff,.6));[[3,3,4,'#8CF5E7'],[-3,-2,3,'#C5A6FF']].forEach(l=>{const p=new THREE.PointLight(l[3],1.4,0);p.position.set(l[0],l[1],l[2]);v.s.add(p)});
+ A=GAD[card.dataset.g](v,G);
+ G.show=()=>{const p=G.sel;info.textContent=p?p.name+' — '+p.desc+(G.extra?G.extra(p):''):'Select a component to read about it.'};
+ G.select=m=>{G.sel=A.parts.find(p=>p.m===m)||null;G.show();blip(500)};G.show();
+ const dis={l:'Disassemble',b:()=>{tg=tg?0:1;dis.el.textContent=tg?'Reassemble':'Disassemble'}};
+ const ctl=$('.ctl',card);const cfg=[...A.cfg,dis];const U=ui(ctl,cfg,G.st,()=>{});dis.el=[...$$('button',ctl)].pop();
+ card._reset=()=>{U.reset();tg=0;dis.el.textContent='Disassemble';G.sel=null;G.show();v.rx=v.ry=0;A.parts.forEach(p=>p.a=0)};
+ $('[data-open]',card).onclick=e=>{const o=card.classList.toggle('open');e.target.textContent=o?'Close object':'Explore object';e.target.setAttribute('aria-expanded',o)};
+ card.addEventListener('keydown',e=>{if(G.rot&&['ArrowLeft','ArrowRight'].includes(e.key)&&e.target.tagName!=='INPUT'&&e.target.tagName!=='SELECT'){G.rot(e.key==='ArrowLeft'?-15:15)}});card.tabIndex=-1;
+ v.tick=(t,dt)=>{ex=clamp(ex+(tg?dt:-dt)*.9,0,1);A.parts.forEach((p,i)=>{const e=clamp(ex*1.8-i*.25,0,1),s=e*e*(3-2*e);p.m.position.copy(p.base).addScaledVector(p.dir,s);if(p.m.material.emissive&&p.hi!==false)p.m.material.emissive.setHex(p===G.sel?0x2a6f68:p.m===hov?0x173f3b:0)});
+  if(!RM)v.ry+=dt*.12;v.root.rotation.set(v.rx,v.ry,0);v.cv.style.cursor=hov?'pointer':'grab';A.tick(t,dt)}});
+addEventListener('keydown',e=>{if(e.key==='Escape')$$('.card.open [data-open]').forEach(b=>b.click())});
+/* ---------- Creator Studio ---------- */
+const OBJ=['Torus','Sphere','Knot','Icosahedron'],GEO=[()=>new THREE.TorusGeometry(1.1,.42,96,160),()=>new THREE.SphereGeometry(1.3,96,64),()=>new THREE.TorusKnotGeometry(.9,.3,200,32),()=>new THREE.IcosahedronGeometry(1.4,3)];
+const STC=[{k:'obj',l:'Object',o:OBJ,v:0},{k:'mat',l:'Material',o:['Chrome','Frosted glass','Liquid','Matte ceramic'],v:0},{k:'ca',l:'Colour A',c:1,v:'#8cf5e7'},{k:'cb',l:'Colour B',c:1,v:'#c5a6ff'},{k:'rot',l:'Rotation',mn:0,mx:360,v:0},{k:'dist',l:'Distortion',mn:0,mx:100,v:40},{k:'glow',l:'Glow intensity',mn:0,mx:100,v:50},{k:'dens',l:'Particle density',mn:0,mx:100,v:60},{k:'speed',l:'Animation speed',mn:0,mx:100,v:50}];
+const st={},stMat=mat(),sv=viewer($('#stCv')),stUi=ui($('#stctl'),STC,st,c=>{if(c==='obj'&&sm){sm.geometry.dispose();sm.geometry=GEO[st.obj]()}});let sm,sp,stt=0,sa=0;
+if(sv){sm=new THREE.Mesh(GEO[st.obj](),stMat);sp=pts(NP,2,'#8CF5E7');sv.root.add(sm,sp);
+ sv.tick=(t,dt)=>{stt+=dt*st.speed/50*(RM?.2:1);if(!RM)sa+=dt*.3*st.speed/50;setM(stMat,stt,st.dist,60,st.glow);stMat.uniforms.uM.value=st.mat;stMat.uniforms.uA.value.set(st.ca);stMat.uniforms.uB.value.set(st.cb);sp.material.color.set(st.ca);sp.geometry.setDrawRange(0,NP*st.dens/100);sv.root.rotation.y=rad(st.rot)+sa;sv.root.rotation.x=sv.py*.2;sp.rotation.y=-stt*.2}}
+let mem=[];const LS={get(){try{return JSON.parse(localStorage.getItem('sensora.presets')||'[]')}catch(e){return mem}},set(a){mem=a;try{localStorage.setItem('sensora.presets',JSON.stringify(a))}catch(e){}}};
+const msg=(t,ok=true)=>{const m=$('#msg');m.textContent=t;m.className=ok?'ok':'err'};
+function plist(sel){const a=LS.get(),l=$('#plist');l.textContent='';a.forEach((p,i)=>l.add(new Option(p.name,i)));if(!a.length)l.add(new Option('No saved presets',-1));if(sel!=null)l.value=sel}
+function clean(o){if(!o||typeof o!=='object'||Array.isArray(o))throw Error('File is not a configuration object.');const c=o.config||o,r={};for(const f of STC){const x=c[f.k];if(f.c){if(typeof x!=='string'||!/^#[0-9a-f]{6}$/i.test(x))throw Error('Invalid colour “'+f.k+'”.');r[f.k]=x}else{if(typeof x!=='number'||!isFinite(x))throw Error('Missing or invalid value “'+f.k+'”.');r[f.k]=clamp(Math.round(x),f.o?0:f.mn,f.o?f.o.length-1:f.mx)}}return r}
+const apply=c=>{Object.assign(st,c);stUi.sync();if(sm){sm.geometry.dispose();sm.geometry=GEO[st.obj]()}};
+const cur2=()=>{const a=LS.get(),i=+$('#plist').value;return[a,i,a[i]]};
+$('#psave').onclick=()=>{const n=$('#pname').value.trim()||'Preset '+(LS.get().length+1),a=LS.get(),i=a.findIndex(p=>p.name===n),e={name:n,config:{...st}};i<0?a.push(e):a[i]=e;LS.set(a);plist(i<0?a.length-1:i);msg('Saved “'+n+'”.')};
+$('#pload').onclick=()=>{const[,,p]=cur2();if(!p)return msg('Choose a saved preset first.',false);apply(p.config);$('#pname').value=p.name;msg('Loaded “'+p.name+'”.')};
+$('#pren').onclick=()=>{const[a,i,p]=cur2(),n=$('#pname').value.trim();if(!p)return msg('Choose a preset to rename.',false);if(!n)return msg('Type the new name first.',false);p.name=n;LS.set(a);plist(i);msg('Renamed to “'+n+'”.')};
+$('#pdel').onclick=()=>{const[a,i,p]=cur2();if(!p)return msg('Choose a preset to delete.',false);a.splice(i,1);LS.set(a);plist();msg('Deleted “'+p.name+'”.')};
+$('#preset').onclick=()=>{stUi.reset();msg('Configuration reset.')};
+$('#pexp').onclick=async()=>{const j=JSON.stringify({app:'sensora',config:{...st}},null,2);$('#json').value=j;try{await navigator.clipboard.writeText(j);msg('Exported and copied to the clipboard.')}catch(e){msg('Exported below. Copy the JSON to keep it.')}};
+function imp(text){try{apply(clean(JSON.parse(text)));msg('Imported configuration.')}catch(e){msg('Import failed: '+(e.message||'invalid JSON')+' Nothing was changed.',false)}}
+$('#pimp').onclick=()=>imp($('#json').value);
+$('#pfile').onchange=e=>{const f=e.target.files[0];if(!f)return;if(f.size>1e5)return msg('Import failed: file is too large.',false);const r=new FileReader();r.onload=()=>{$('#json').value=r.result;imp(r.result)};r.onerror=()=>msg('Import failed: file could not be read.',false);r.readAsText(f);e.target.value=''};
+plist();
+/* ---------- Outro ---------- */
+const om=mat(),ov=viewer($('#outCv'));
+if(ov){const mesh=new THREE.Mesh(new THREE.TorusGeometry(1.1,.45,96,160),om),op=pts(NP,1.4,'#8CF5E7');ov.root.add(mesh,op);
+ ov.tick=(t)=>{const p=RM?0:Math.pow((Math.sin(t*.6)+1)/2,1.5);setM(om,t,50*p+20,50,40);om.uniforms.uO.value=1-p;mesh.scale.setScalar(1-.3*p);op.scale.setScalar(.5+p*1.4);op.material.opacity=p*.9;ov.root.rotation.y=t*.15}}
+$('#back').onclick=()=>$('#play').scrollIntoView();
+/* ---------- Nav, active section, shortcuts ---------- */
+$('#menu').onclick=e=>{const o=$('#nav').classList.toggle('open');e.target.setAttribute('aria-expanded',o)};
+$$('nav.top a').forEach(a=>a.addEventListener('click',()=>$('#nav').classList.remove('open')));
+let sec='entrance';new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){sec=e.target.id;$$('nav.top a.l').forEach(a=>a.toggleAttribute('aria-current',a.getAttribute('href')==='#'+sec));$$('nav.top a.l[aria-current]').forEach(a=>a.setAttribute('aria-current','true'))}}),{threshold:.4}).observe&&$$('main section').forEach(s=>0);
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){sec=e.target.id;$$('nav.top a.l').forEach(a=>{const on=a.getAttribute('href')==='#'+sec;on?a.setAttribute('aria-current','true'):a.removeAttribute('aria-current')})}}),{threshold:.4});$$('main section').forEach(s=>io.observe(s));
+addEventListener('keydown',e=>{if(e.key.toLowerCase()!=='r'||e.ctrlKey||e.metaKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+ ({lab:resetLab,play:()=>pgUi&&pgUi.reset(),gallery:()=>$$('.card').forEach(c=>c._reset&&c._reset()),studio:()=>stUi.reset()})[sec]?.()});
+setTimeout(()=>$('#load').classList.add('h'),400);
+</script></body></html>
